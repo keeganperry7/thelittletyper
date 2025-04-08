@@ -59,6 +59,7 @@
 (define plus-assoc
   (lambda (n m k)
     (ind-Nat k
-      (mot-plus-assoc n m)
-      (base-plus-assoc n m)
-      (step-plus-assoc n m))))
+      (lambda (k) (= Nat (+ k (+ n m)) (+ (+ k n) m)))
+      (same (+ n m))
+      (lambda (_ ih) 
+        (cong ih (+ 1))))))
