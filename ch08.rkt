@@ -31,28 +31,6 @@
     (cong a=b (the (-> Nat Nat) (lambda (x) (+ x n))))))
 
 ; Exercise 3
-(claim mot-plus-assoc
-  (-> Nat Nat Nat U))
-(define mot-plus-assoc
-  (lambda (n m k)
-    (= Nat (+ k (+ n m)) (+ (+ k n) m))))
-
-(claim base-plus-assoc
-  (Pi ((n Nat) (m Nat))
-    (= Nat (+ zero (+ n m)) (+ (+ zero n) m))))
-(define base-plus-assoc
-  (lambda (n m)
-    (same (+ n m))))
-
-(claim step-plus-assoc
-  (Pi ((n Nat) (m Nat) (k Nat))
-    (-> 
-      (= Nat (+ k (+ n m)) (+ (+ k n) m))
-      (= Nat (+ (add1 k) (+ n m)) (+ (+ (add1 k) n) m)))))
-(define step-plus-assoc
-  (lambda (_ _ _ ih)
-    (cong ih (+ 1))))
-
 (claim plus-assoc
  (Pi ((n Nat) (m Nat) (k Nat))
    (= Nat (+ k (+ n m)) (+ (+ k n) m))))
