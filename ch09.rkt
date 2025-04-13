@@ -1,5 +1,27 @@
 #lang pie
 
+; Exercise 1
+(claim same-cons
+  (Pi ((t U) (x t) (as (List t)) (bs (List t)))
+    (-> (= (List t) as bs)
+        (= (List t) (:: x as) (:: x bs)))))
+(define same-cons
+  (lambda (t x as _bs as=bs)
+    (replace as=bs
+      (lambda (k) (= (List t) (:: x as) (:: x k)))
+      (same (:: x as)))))
+
+; Exercise 2
+(claim same-lists
+  (Pi ((t U) (e1 t) (e2 t) (l1 (List t)) (l2 (List t)))
+    (-> (= (List t) l1 l2) (= t e1 e2)
+        (= (List t) (:: e1 l1) (:: e2 l2)))))
+(define same-lists
+  (lambda (t e1 _e2 l1 l2 l1=l2 e1=e2)
+    (replace (cong e1=e2 (the (-> t (List t)) (lambda (x) (:: x l2))))
+      (lambda (k) (= (List t) (:: e1 l1) k))
+      (cong l1=l2 (the (-> (List t) (List t)) (lambda (l) (:: e1 l)))))))
+
 (claim step-+
   (-> Nat Nat Nat))
 (define step-+
@@ -44,5 +66,14 @@
       (lambda (a) (= Nat (+ a b) (+ b a)))
       (symm (n+zero=n b))
       (lambda (a ih)
-        (trans (cong ih (+ 1)) (add1-+=+-add1 b a))))))
+        (replace (add1-+=+-add1 b a)
+          (lambda (k) (= Nat (add1 (+ a b)) k))
+          (cong ih (+ 1)))))))
 
+; (define a+b=b+a
+;   (lambda (a b)
+;     (ind-Nat a
+;       (lambda (a) (= Nat (+ a b) (+ b a)))
+;       (symm (n+zero=n b))
+;       (lambda (a ih)
+;         (trans (cong ih (+ 1)) (add1-+=+-add1 b a))))))
