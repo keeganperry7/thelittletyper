@@ -18,8 +18,8 @@
         (= (List t) (:: e1 l1) (:: e2 l2)))))
 (define same-lists
   (lambda (t e1 _e2 l1 l2 l1=l2 e1=e2)
-    (replace (cong e1=e2 (the (-> t (List t)) (lambda (x) (:: x l2))))
-      (lambda (k) (= (List t) (:: e1 l1) k))
+    (replace e1=e2
+      (lambda (k) (= (List t) (:: e1 l1) (:: k l2)))
       (same-cons t e1 l1 l2 l1=l2))))
 
 (claim step-+
