@@ -69,6 +69,11 @@
         (replace (add1-+=+-add1 b a)
           (lambda (k) (= Nat (add1 (+ a b)) k))
           (cong ih (+ 1)))))))
+      ; (lambda (a ih)
+      ;   (replace (symm ih)
+      ;     (lambda (k) (= Nat (add1 k) (+ b (add1 a))))
+      ;     (add1-+=+-add1 b a))))))
+
 
 ; (define a+b=b+a
 ;   (lambda (a b)
