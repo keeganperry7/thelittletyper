@@ -58,7 +58,6 @@
 (define 1<=2
   (cons 1 (same 2)))
 
-; Exercise 2.2
 (claim add1-+=+-add1
   (Pi ((a Nat) (b Nat)) 
     (= Nat (add1 (+ a b)) (+ a (add1 b)) )))
@@ -75,13 +74,14 @@
     (-> (<= (+ 1 a) b)
         (<= a b))))
 (define a+1<=b->a<=b
-  (lambda (a b a+1<=b)
+  (lambda (a _b a+1<=b)
     (cons 
       (add1 (car a+1<=b)) 
       (trans 
         (add1-+=+-add1 (car a+1<=b) a) 
         (cdr a+1<=b)))))
 
+; Exercise 2.2
 (claim <=-simplify
   (Pi ((a Nat) (b Nat) (n Nat))
     (-> (<= (+ n a) b)
@@ -94,7 +94,6 @@
       (lambda (n ih n+1+a<=b) 
         (ih (a+1<=b->a<=b (+ n a) b n+1+a<=b))))))
 
-; Exercise 2.3
 (claim plus-assoc
  (Pi ((n Nat) (m Nat) (k Nat))
    (= Nat (+ n (+ m k)) (+ (+ n m) k))))
@@ -106,13 +105,14 @@
       (lambda (_ ih) 
         (cong ih (+ 1))))))
 
+; Exercise 2.3
 (claim <=-trans
   (Pi ((a Nat) (b Nat) (c Nat))
     (-> (<= a b)
         (<= b c)
         (<= a c))))
 (define <=-trans
-  (lambda (a b c a<=b b<=c) 
+  (lambda (a _b c a<=b b<=c) 
     (cons 
       (+ (car b<=c) (car a<=b)) 
       (trans 
@@ -145,12 +145,34 @@
         (the (List E) nil)
         (step-filter E pred)))))
 
-(claim n<=n+1
-  (Pi ((n Nat))
-    (<= n (add1 n))))
-(define n<=n+1
-  (lambda (n)
-    (cons 1 (same (+ 1 n)))))
+(claim length-filter-cons
+  (Pi ((E U) (e E) (l (List E)) (pred (-> E Nat)))
+    (<= (length E (filter-list E pred (:: e l))) (add1 (length E (filter-list E pred l))))))
+(define length-filter-cons
+  (lambda (E e l pred)
+    (ind-Nat (pred e)
+      (lambda (n) 
+        (<= 
+          (length E (which-Nat n (filter-list E pred l) (lambda (_) (:: e (filter-list E pred l))))) 
+          (add1 (length E (filter-list E pred l)))))
+      (cons 1 (same (+ 1 (length E (filter-list E pred l))))) 
+      (lambda (_ _) 
+        (cons 0 (same (add1 (length E (filter-list E pred l)))))))))
+
+(claim <=->add1<=
+  (Pi ((x Nat)
+       (y Nat))
+    (->
+      (<= x y)
+      (<= (add1 x) (add1 y)))))
+(define <=->add1<=
+  (lambda (x y)
+    (lambda (x<=y)
+      (cons
+        (car x<=y)
+        (replace (add1-+=+-add1 (car x<=y) x)
+          (lambda (x) (= Nat x (add1 y)))
+          (cong (cdr x<=y) (+ 1)))))))
 
 ; Exercise 3
 (claim length-filter-list
@@ -162,4 +184,9 @@
       (lambda (l) (<= (length E (filter-list E pred l)) (length E l)))
       (cons 0 (same 0))
       (lambda (e es ih)
-        TODO))))
+        (<=-trans
+          (length E (filter-list E pred (:: e es))) 
+          (add1 (length E (filter-list E pred es))) 
+          (add1 (length E es))
+          (length-filter-cons E e es pred)
+          (<=->add1<= (length E (filter-list E pred es)) (length E es) ih))))))
